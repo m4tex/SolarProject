@@ -1,0 +1,10 @@
+^Z:\DESKTOP\SOLARPROJECT\CMAKE-BUILD-DEBUG-VISUAL-STUDIO\CMAKEFILES\7838AEAF0803C601E899C9C5EDA83D6D\GENERATE.STAMP.RULE
+setlocal
+"Z:\Program Files\CLion 2022.1.1\bin\cmake\win\bin\cmake.exe" -SZ:/Desktop/SolarProject -BZ:/Desktop/SolarProject/cmake-build-debug-visual-studio --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file Z:/Desktop/SolarProject/cmake-build-debug-visual-studio/SolarProject.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
