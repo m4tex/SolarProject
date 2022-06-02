@@ -8,7 +8,7 @@
 namespace Window {
     LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    bool Create(HWND lpHwnd) {
+    bool Create(HWND* lpHwnd) {
         // Register the window class.
         const char CLASS_NAME[] = "Sample Window Class";
         const HINSTANCE hInstance = (HINSTANCE) GetModuleHandle(nullptr);
@@ -38,7 +38,7 @@ namespace Window {
                 nullptr        // Additional application data
         );
 
-        lpHwnd = hwnd;
+        *lpHwnd = hwnd;
 
         if (hwnd == nullptr) {
             return 0;
