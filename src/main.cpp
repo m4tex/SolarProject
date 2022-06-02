@@ -1,8 +1,7 @@
-#include <iostream>
 #include "window.cpp"
 
 int main() {
-    std::cout << "Hello World!" << std::endl;
-    CreateApplicationWindow();
+    HWND mainHwnd;
+    Window::Create(mainHwnd);
     return 0;
 }
