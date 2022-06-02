@@ -2,18 +2,15 @@
 // Created by MatexPL on 2022-06-01.
 //
 
-#ifndef UNICODE
-#define UNICODE
-#endif
-
-#include "iostream"
-#include "rendererwoo.cpp"
+#include <iostream>
+#include <windows.h>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
+HWND CreateApplicationWindow(HWND parent = NULL) {
     // Register the window class.
-    const wchar_t CLASS_NAME[] = L"Sample Window Class";
+    const char CLASS_NAME[] = "Sample Window Class";
+    const HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
 
     WNDCLASS wc = {};
 
@@ -28,13 +25,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     HWND hwnd = CreateWindowEx(
             WS_EX_CLIENTEDGE,
             CLASS_NAME,
-            L"Learn to Program Windows",
+            "Learn to Program Windows",
             (WS_OVERLAPPED & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME),
 
             // Size and position
             CW_USEDEFAULT, CW_USEDEFAULT, 500, 500,
 
-            NULL,       // Parent window
+            parent,       // Parent window
             NULL,       // Menu
             hInstance,  // Instance handle
             NULL        // Additional application data
@@ -44,7 +41,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         return 0;
     }
 
-    ShowWindow(hwnd, nCmdShow);
+    ShowWindow(hwnd, 1);
     // Run the message loop.
 
     MSG msg = {};
@@ -64,10 +61,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
         case WM_PAINT: {
             //The window is not resizable... so I guess I can leave this empty?
-        }
-        case WM_MBUTTONDOWN: {
             std::cout << "Click" << std::endl;
-            Renderer::Draw();
+        }
+        case WM_LBUTTONUP: {
+
+//            Renderer::Draw();
         }
             return 0;
     }

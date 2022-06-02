@@ -1,8 +1,8 @@
 #include <iostream>
-//#include "renderer.cpp"
+#include "window.cpp"
 
-//int main() {
-//    std::cout << "Hewwo" << std::endl;
-//    Renderer::Draw();
-//    return 0;
-//}
+int main() {
+    std::cout << "Hello World!" << std::endl;
+    CreateApplicationWindow();
+    return 0;
+}
