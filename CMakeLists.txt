@@ -3,5 +3,5 @@ project(SolarProject)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(SolarProject src/main.cpp)
+add_executable(SolarProject src/main.cpp headers/engine.h)
 

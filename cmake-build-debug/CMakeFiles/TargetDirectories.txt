@@ -1,0 +1,3 @@
+C:/Users/wiktoralan.wisniowi/Desktop/Project Society (society exists)/SolarProject/cmake-build-debug/CMakeFiles/SolarProject.dir
+C:/Users/wiktoralan.wisniowi/Desktop/Project Society (society exists)/SolarProject/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/wiktoralan.wisniowi/Desktop/Project Society (society exists)/SolarProject/cmake-build-debug/CMakeFiles/rebuild_cache.dir

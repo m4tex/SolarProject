@@ -27,7 +27,7 @@ namespace Window {
                 WS_EX_CLIENTEDGE,
                 CLASS_NAME,
                 "Learn to Program Windows",
-                (WS_OVERLAPPED & ~WS_MAXIMIZEBOX & ~WS_THICKFRAME),
+                WS_OVERLAPPEDWINDOW,
 
                 // Size and position
                 CW_USEDEFAULT, CW_USEDEFAULT, 500, 500,
