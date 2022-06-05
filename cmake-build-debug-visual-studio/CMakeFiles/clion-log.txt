@@ -1,0 +1,5 @@
+"Z:\Program Files\CLion 2022.1.1\bin\cmake\win\bin\cmake.exe" -G "Visual Studio 16 2019" -S Z:\Desktop\SolarProject -B Z:\Desktop\SolarProject\cmake-build-debug-visual-studio
+-- Selecting Windows SDK version 10.0.16299.0 to target Windows 10.0.19043.
+-- Configuring done
+-- Generating done
+-- Build files have been written to: Z:/Desktop/SolarProject/cmake-build-debug-visual-studio

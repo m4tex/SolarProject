@@ -1,0 +1,23 @@
+# CMake generation dependency list for this directory.
+Z:/Desktop/SolarProject/CMakeLists.txt
+Z:/Desktop/SolarProject/cmake-build-debug-visual-studio/CMakeFiles/3.22.3/CMakeCCompiler.cmake
+Z:/Desktop/SolarProject/cmake-build-debug-visual-studio/CMakeFiles/3.22.3/CMakeCXXCompiler.cmake
+Z:/Desktop/SolarProject/cmake-build-debug-visual-studio/CMakeFiles/3.22.3/CMakeRCCompiler.cmake
+Z:/Desktop/SolarProject/cmake-build-debug-visual-studio/CMakeFiles/3.22.3/CMakeSystem.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeCInformation.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeCXXInformation.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeGenericSystem.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeRCInformation.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/Compiler/MSVC-C.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/Compiler/MSVC-CXX.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/Platform/Windows-MSVC-C.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/Platform/Windows-MSVC-CXX.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/Platform/Windows-MSVC.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/Platform/Windows.cmake
+Z:/Program Files/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/Platform/WindowsPaths.cmake

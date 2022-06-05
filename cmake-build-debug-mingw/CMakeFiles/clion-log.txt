@@ -1,0 +1,4 @@
+"Z:\Program Files\CLion 2022.1.1\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=Z:/Program Files/CLion 2022.1.1/bin/ninja/win/ninja.exe" -G Ninja -S Z:\Desktop\SolarProject -B Z:\Desktop\SolarProject\cmake-build-debug-mingw
+-- Configuring done
+-- Generating done
+-- Build files have been written to: Z:/Desktop/SolarProject/cmake-build-debug-mingw
