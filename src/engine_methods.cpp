@@ -2,14 +2,13 @@
 // Created by MatexPL on 2022-06-07.
 //
 #include <cmath>
-#include <chrono>
-#include <string>
 #include "../headers/engine_methods.h"
 #include "../headers/engine_globals.h"
 #include "../headers/SolarObject.h"
 
 //temporary
 #define cameraPosition { 0, 0, 0 }
+#define baseIllumination 96
 
 using namespace Engine;
 
@@ -24,8 +23,6 @@ Matrix4x4 projectionMatrix = {
 std::vector<SolarObject> renderQueue;
 std::vector<Triangle> triangleQueue;
 
-int FPS;
-
 void MultiplyMatrixVector(Vector3 &i, Vector3 &o, Matrix4x4 &m) {
     o.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + m.m[3][0];
     o.y = i.x * m.m[0][1] + i.y * m.m[1][1] + i.z * m.m[2][1] + m.m[3][1];
@@ -39,24 +36,30 @@ void MultiplyMatrixVector(Vector3 &i, Vector3 &o, Matrix4x4 &m) {
     }
 }
 
-void ProjectTriangleToQueue(Triangle triangle, Vector3 pos, Vector3 scale, Vector3 camPos, std::vector<Triangle> &queue) {
+Vector3 test;
+
+Matrix4x4 rotationMatrix;
+
+void ProjectTriangleToQueue(Triangle triangle, SolarObject parent, Vector3 camPos, std::vector<Triangle> &queue) {
+    Triangle rotated;
     Triangle projected;
 
-    //Translation and scaling
+    //Translation, rotation and scaling
     for (int i = 0; i < 3; ++i) {
-        triangle.vertices[i] *= scale;
-        triangle.vertices[i] += pos;
+        MultiplyMatrixVector(triangle.vertices[i], rotated.vertices[i], rotationMatrix);
+        rotated.vertices[i] *= parent.scale;
+        rotated.vertices[i] += parent.position;
     }
 
     //calculate normal and normalize it
     Vector3 normal, startLine, endLine;
-    startLine.x = triangle.vertices[1].x - triangle.vertices[0].x;
-    startLine.y = triangle.vertices[1].y - triangle.vertices[0].y;
-    startLine.z = triangle.vertices[1].z - triangle.vertices[0].z;
+    startLine.x = rotated.vertices[1].x - rotated.vertices[0].x;
+    startLine.y = rotated.vertices[1].y - rotated.vertices[0].y;
+    startLine.z = rotated.vertices[1].z - rotated.vertices[0].z;
 
-    endLine.x = triangle.vertices[2].x - triangle.vertices[0].x;
-    endLine.y = triangle.vertices[2].y - triangle.vertices[0].y;
-    endLine.z = triangle.vertices[2].z - triangle.vertices[0].z;
+    endLine.x = rotated.vertices[2].x - rotated.vertices[0].x;
+    endLine.y = rotated.vertices[2].y - rotated.vertices[0].y;
+    endLine.z = rotated.vertices[2].z - rotated.vertices[0].z;
 
     normal.x = startLine.y * endLine.z - startLine.z * endLine.y;
     normal.y = startLine.z * endLine.x - startLine.x * endLine.z;
@@ -67,31 +70,38 @@ void ProjectTriangleToQueue(Triangle triangle, Vector3 pos, Vector3 scale, Vecto
     normal /= length;
 
     //Don't project or draw if the relative normals are positive.
-    if (normal.x * (triangle.vertices[0].x - camPos.x) +
-        normal.y * (triangle.vertices[0].y - camPos.y) +
-        normal.z * (triangle.vertices[0].z - camPos.z) > 0) {
-
+    if (normal.x * (rotated.vertices[0].x - camPos.x) +
+        normal.y * (rotated.vertices[0].y - camPos.y) +
+        normal.z * (rotated.vertices[0].z - camPos.z) > 0) {
         return;
     }
 
     //Illumination
-    Vector3 lightColor = {255, 255, 255};
+    Vector3 lightColor = {
+            255 - baseIllumination,
+            255 - baseIllumination,
+            255 - baseIllumination
+    };
     Vector3 lightDirection = {0, 0, -1};
-    float l = sqrtf(lightDirection.x * lightDirection.x + lightDirection.y * lightDirection.y +
+    float l = sqrtf(lightDirection.x * lightDirection.x +
+                    lightDirection.y * lightDirection.y +
                     lightDirection.z * lightDirection.z);
     lightDirection /= l;
 
     //The dot product of the light direction and lighting (similarity)
     float dp = normal.x * lightDirection.x + normal.y * lightDirection.y + normal.z * lightDirection.z;
 
-    projected.color = RGB((int) (lightColor.x * dp), (int) (lightColor.y * dp), (int) (lightColor.z * dp));
+    projected.color = RGB((int) (lightColor.x * dp + baseIllumination),
+                          (int) (lightColor.y * dp + baseIllumination),
+                          (int) (lightColor.z * dp + baseIllumination));
 
     for (int i = 0; i < 3; ++i) {
-        MultiplyMatrixVector(triangle.vertices[i], projected.vertices[i], projectionMatrix);
+        MultiplyMatrixVector(rotated.vertices[i], projected.vertices[i], projectionMatrix);
     }
 
-    //scale into view
+    //Final transformation
     for (int i = 0; i < 3; ++i) {
+        //Scale into view
         projected.vertices[i] += 1;
         projected.vertices[i].x *= 0.5f * wnd_w;
         projected.vertices[i].y *= 0.5f * wnd_h;
@@ -101,9 +111,10 @@ void ProjectTriangleToQueue(Triangle triangle, Vector3 pos, Vector3 scale, Vecto
 }
 
 void DrawObject(SolarObject obj, HDC deviceCtx) {
+    rotationMatrix = obj.GetRotationMatrix();
 
     for (auto triangle: obj.mesh.tris) {
-        ProjectTriangleToQueue(triangle, obj.position, obj.scale, cameraPosition, triangleQueue);
+        ProjectTriangleToQueue(triangle, obj, cameraPosition, triangleQueue);
     }
 
     std::sort(triangleQueue.begin(), triangleQueue.end(), [](Triangle &t1, Triangle &t2) {
@@ -133,23 +144,20 @@ void DrawObject(SolarObject obj, HDC deviceCtx) {
 
         //wireframe
 
-        HPEN blackPen = CreatePen(0, 1, RGB(0, 0, 0));
-        SelectObject(deviceCtx, blackPen);
-
-        MoveToEx(deviceCtx, triangle.vertices[0].x, wnd_h - triangle.vertices[0].y, nullptr);
-        LineTo(deviceCtx, triangle.vertices[1].x, wnd_h - triangle.vertices[1].y);
-        MoveToEx(deviceCtx, triangle.vertices[1].x, wnd_h - triangle.vertices[1].y, nullptr);
-        LineTo(deviceCtx, triangle.vertices[2].x, wnd_h - triangle.vertices[2].y);
-        MoveToEx(deviceCtx, triangle.vertices[2].x, wnd_h - triangle.vertices[2].y, nullptr);
-        LineTo(deviceCtx, triangle.vertices[0].x, wnd_h - triangle.vertices[0].y);
+//        HPEN blackPen = CreatePen(0, 1, RGB(0, 0, 0));
+//        SelectObject(deviceCtx, blackPen);
+//
+//        MoveToEx(deviceCtx, triangle.vertices[0].x, wnd_h - triangle.vertices[0].y, nullptr);
+//        LineTo(deviceCtx, triangle.vertices[1].x, wnd_h - triangle.vertices[1].y);
+//        MoveToEx(deviceCtx, triangle.vertices[1].x, wnd_h - triangle.vertices[1].y, nullptr);
+//        LineTo(deviceCtx, triangle.vertices[2].x, wnd_h - triangle.vertices[2].y);
+//        MoveToEx(deviceCtx, triangle.vertices[2].x, wnd_h - triangle.vertices[2].y, nullptr);
+//        LineTo(deviceCtx, triangle.vertices[0].x, wnd_h - triangle.vertices[0].y);
     }
 
     //Empty the triangle queue
     triangleQueue.clear();
 }
-
-//const RECT fpsRect = { 20, 20, 300, 150 };
-auto t_last = std::chrono::high_resolution_clock::now();
 
 namespace Engine {
     void AddToRenderQueue(SolarObject obj) {
@@ -160,10 +168,5 @@ namespace Engine {
         for (int i = 0; i < renderQueue.size(); ++i) {
             DrawObject(renderQueue[i], deviceCtx);
         }
-        auto t_now = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = t_now - t_last;
-        FPS = (int)(1/elapsed.count());
-        t_last = t_now;
-//        DrawTextA(deviceCtx, strFps.c_str(), strFps.length(), (LPRECT)&fpsRect, DT_LEFT);
     }
 }

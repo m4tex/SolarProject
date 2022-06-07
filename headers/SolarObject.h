@@ -12,9 +12,13 @@ namespace Engine {
         SolarObject(std::string objName);
         std::string name;
         Vector3 position, rotation, scale;
-        Vector3 velocity, angularVelocity;
+
         Mesh mesh;
+
         float mass;
+        Vector3 velocity, angularVelocity;
+
+        Matrix4x4 GetRotationMatrix();
     };
 } // Engine
 

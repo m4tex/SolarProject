@@ -12,8 +12,9 @@ Engine::SolarObject sword("Sword");
 void StartWindow(HINSTANCE hinstance);
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-    sword.mesh.LoadFromFile("../resources/models/cube.obj");
-    sword.position = { 0, 0, 5 };
+    sword.mesh.LoadFromFile("../resources/models/sword.obj");
+    sword.position = { 0, -1.5, 5 };
+    sword.rotation = { 45, 45, 0 };
     Engine::AddToRenderQueue(sword);
     StartWindow(hInstance);
     return 0;
@@ -23,9 +24,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 HBRUSH bgBrush = CreateSolidBrush(RGB(0, 0, 0));
 
+const std::string windowTitle = "Solar Engine";
+
 void StartWindow(HINSTANCE hinstance) {
     // Register the window class.
-    const char CLASS_NAME[] = "Sample Window Class";
+    const char CLASS_NAME[] = "SolarEngine Window Class";
 
     WNDCLASS wc = {};
 
@@ -44,8 +47,8 @@ void StartWindow(HINSTANCE hinstance) {
     HWND hwnd = CreateWindowEx(
             WS_EX_CLIENTEDGE,
             CLASS_NAME,
-            "SolarEngine",
-            WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME &  ~WS_MAXIMIZEBOX,
+            windowTitle.c_str(),
+    WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME &  ~WS_MAXIMIZEBOX,
 
             // Size and position
             (screenWidth / 2) - 263, (screenHeight / 2) - 263, wnd_w, wnd_h + 31,
@@ -65,6 +68,7 @@ void StartWindow(HINSTANCE hinstance) {
 
     GetClientRect(hwnd, &clientArea);
 
+    auto t_old = std::chrono::high_resolution_clock::now();
     MSG msg;
 
     while(true){
@@ -80,7 +84,12 @@ void StartWindow(HINSTANCE hinstance) {
         HDC deviceCtx = BeginPaint(hwnd, &ps);
         Engine::Render(deviceCtx);
         EndPaint(hwnd, &ps);
-        SetWindowText(hwnd, std::to_string(Engine::FPS).c_str());
+
+        //FPS counter
+        auto t_new = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = t_new - t_old;
+        SetWindowText(hwnd, (windowTitle + " (FPS: " + std::to_string((int)(1/elapsed.count())) + ")").c_str());
+        t_old = t_new;
     }
 
     return;
