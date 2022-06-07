@@ -5,13 +5,17 @@
 #include "../headers/engine_globals.h"
 #include "../headers/engine_methods.h"
 
-Engine::Mesh model;
+RECT clientArea;
+
+Engine::SolarObject sword("Sword");
 
 void StartWindow(HINSTANCE hinstance);
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-    model.LoadFromFile("../resources/models/sword.obj");
+    sword.mesh.LoadFromFile("../resources/models/sword.obj");
+    sword.position = { .5, .5, 1 };
     StartWindow(hInstance);
+    Engine::AddToRenderQueue(sword);
     return 0;
 }
 
@@ -49,7 +53,6 @@ void StartWindow(HINSTANCE hinstance) {
             nullptr        // Additional application data
     );
 
-
     if (hwnd == nullptr) {
         return;
     }
@@ -57,7 +60,7 @@ void StartWindow(HINSTANCE hinstance) {
     ShowWindow(hwnd, 1);
     // Run the message loop.
 
-    GetClientRect(hwnd, &Engine::clientArea);
+    GetClientRect(hwnd, &clientArea);
 
     MSG msg = {};
     while (GetMessage(&msg, nullptr, 0, 0) > 0) {
@@ -70,7 +73,7 @@ void StartWindow(HINSTANCE hinstance) {
 
 void DrawFrame(HDC deviceCtx);
 
-void EngineTick(HWND windowHandler);
+void PhysicsTick(HWND windowHandler);
 
 LRESULT CALLBACK WindowProc(HWND windowHandler, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -83,32 +86,26 @@ LRESULT CALLBACK WindowProc(HWND windowHandler, UINT uMsg, WPARAM wParam, LPARAM
             HDC deviceCtx = BeginPaint(windowHandler, &ps);
             DrawFrame(deviceCtx);
             EndPaint(windowHandler, &ps);
-            EngineTick(windowHandler);
+            PhysicsTick(windowHandler);
             return 0;
     }
     return DefWindowProc(windowHandler, uMsg, wParam, lParam);
 }
 
 HBRUSH blackBrush = CreateSolidBrush(RGB(0, 0, 0));
-HPEN whitePen = CreatePen(0, 1, RGB(255, 255, 255));
 
-int frame = 0; //int is big enough for ~50 days with 1000fps
+int frame = 0; //int is big enough for ~50 days at 1000fps
 
 void DrawFrame(HDC deviceCtx) {
-    FillRect(deviceCtx, &Engine::clientArea, blackBrush);
-    SelectObject(deviceCtx, whitePen);
-
-    Engine::DrawMesh(model, deviceCtx);
+    FillRect(deviceCtx, &clientArea, blackBrush);
+    Engine::Render(deviceCtx);
     frame++;
-
-    //Debug
-    //DrawTriangle3DSpace({0, 0, 1, 0, 1, .5, 1, 0, 0}, position, deviceCtx);
 }
 
-auto t_start = std::chrono::high_resolution_clock::now();
-// the work...
-auto t_end = std::chrono::high_resolution_clock::now();
+//auto t_start = std::chrono::high_resolution_clock::now();
+//// the work...
+//auto t_end = std::chrono::high_resolution_clock::now();
 
-void EngineTick(HWND windowHandler) {
+void PhysicsTick(HWND windowHandler) {
     SetWindowTextA(windowHandler, std::to_string(GetMessageTime()).c_str());
 }

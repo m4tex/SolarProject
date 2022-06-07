@@ -100,7 +100,4 @@ bool Mesh::LoadFromFile(std::string path) {
 //#endregion
 
 //#region SolarObject
-
-
-
 //#endregion

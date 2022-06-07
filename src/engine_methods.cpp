@@ -4,6 +4,10 @@
 #include <cmath>
 #include "../headers/engine_methods.h"
 #include "../headers/engine_globals.h"
+#include "../headers/SolarObject.h"
+
+//temporary
+#define cameraPosition { 0, 0, 0 }
 
 using namespace Engine;
 
@@ -13,9 +17,23 @@ Matrix4x4 projectionMatrix = {
         aspectRatio * fovRad, 0, 0, 0,
         0, fovRad, 0, 0,
         0, 0, zFar / (zFar - zNear), 1.0f,
-        0, 0, (-zFar * zNear) / (zFar - zNear), 0 };
+        0, 0, (-zFar * zNear) / (zFar - zNear), 0};
 
+std::vector<SolarObject> renderQueue;
 std::vector<Triangle> triangleQueue;
+
+void MultiplyMatrixVector(Vector3 &i, Vector3 &o, Matrix4x4 &m) {
+    o.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + m.m[3][0];
+    o.y = i.x * m.m[0][1] + i.y * m.m[1][1] + i.z * m.m[2][1] + m.m[3][1];
+    o.z = i.x * m.m[0][2] + i.y * m.m[1][2] + i.z * m.m[2][2] + m.m[3][2];
+    float w = i.x * m.m[0][3] + i.y * m.m[1][3] + i.z * m.m[2][3] + m.m[3][3];
+
+    if (w != 0) {
+        o.x /= w;
+        o.y /= w;
+        o.z /= w;
+    }
+}
 
 void ProjectTriangleToQueue(Triangle triangle, Vector3 pos, Vector3 scale, Vector3 camPos, std::vector<Triangle> &queue) {
     Triangle projected;
@@ -77,9 +95,9 @@ void ProjectTriangleToQueue(Triangle triangle, Vector3 pos, Vector3 scale, Vecto
     queue.push_back(projected);
 }
 
-void DrawMesh(Mesh mesh, HDC deviceCtx) {
-    for (auto triangle: mesh.tris) {
-        ProjectTriangleToQueue(triangle, position, scale, camPos, triangleQueue);
+void DrawObject(SolarObject obj, HDC deviceCtx) {
+    for (auto triangle: obj.mesh.tris) {
+        ProjectTriangleToQueue(triangle, obj.position, obj.scale, cameraPosition, triangleQueue);
     }
 
     std::sort(triangleQueue.begin(), triangleQueue.end(), [](Triangle &t1, Triangle &t2) {
@@ -93,7 +111,7 @@ void DrawMesh(Mesh mesh, HDC deviceCtx) {
 
         for (int i = 0; i < 3; ++i) {
             vertex[i].x = triangle.vertices[i].x;
-            vertex[i].y = clientArea.bottom - triangle.vertices[i].y;
+            vertex[i].y = wnd_h - triangle.vertices[i].y;
         }
 
         //Draw the result
@@ -102,7 +120,7 @@ void DrawMesh(Mesh mesh, HDC deviceCtx) {
 
         SelectObject(deviceCtx, brush);
         SelectObject(deviceCtx, pen);
-        MoveToEx(deviceCtx, triangle.vertices[0].x, clientArea.bottom - triangle.vertices[0].y, nullptr);
+        MoveToEx(deviceCtx, triangle.vertices[0].x, wnd_h - triangle.vertices[0].y, nullptr);
         Polygon(deviceCtx, vertex, 3);
         DeleteObject(brush);
         DeleteObject(pen);
@@ -112,27 +130,26 @@ void DrawMesh(Mesh mesh, HDC deviceCtx) {
         HPEN blackPen = CreatePen(0, 1, RGB(0, 0, 0));
         SelectObject(deviceCtx, blackPen);
 
-        MoveToEx(deviceCtx, triangle.vertices[0].x, clientArea.bottom - triangle.vertices[0].y, nullptr);
-        LineTo(deviceCtx, triangle.vertices[1].x, clientArea.bottom - triangle.vertices[1].y);
-        MoveToEx(deviceCtx, triangle.vertices[1].x, clientArea.bottom - triangle.vertices[1].y, nullptr);
-        LineTo(deviceCtx, triangle.vertices[2].x, clientArea.bottom - triangle.vertices[2].y);
-        MoveToEx(deviceCtx, triangle.vertices[2].x, clientArea.bottom - triangle.vertices[2].y, nullptr);
-        LineTo(deviceCtx, triangle.vertices[0].x, clientArea.bottom - triangle.vertices[0].y);
+        MoveToEx(deviceCtx, triangle.vertices[0].x, wnd_h - triangle.vertices[0].y, nullptr);
+        LineTo(deviceCtx, triangle.vertices[1].x, wnd_h - triangle.vertices[1].y);
+        MoveToEx(deviceCtx, triangle.vertices[1].x, wnd_h - triangle.vertices[1].y, nullptr);
+        LineTo(deviceCtx, triangle.vertices[2].x, wnd_h - triangle.vertices[2].y);
+        MoveToEx(deviceCtx, triangle.vertices[2].x, wnd_h - triangle.vertices[2].y, nullptr);
+        LineTo(deviceCtx, triangle.vertices[0].x, wnd_h - triangle.vertices[0].y);
     }
 
     //Empty the triangle queue
     triangleQueue.clear();
 }
 
-void MultiplyMatrixVector(Vector3 &i, Vector3 &o, Matrix4x4 &m) {
-    o.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + m.m[3][0];
-    o.y = i.x * m.m[0][1] + i.y * m.m[1][1] + i.z * m.m[2][1] + m.m[3][1];
-    o.z = i.x * m.m[0][2] + i.y * m.m[1][2] + i.z * m.m[2][2] + m.m[3][2];
-    float w = i.x * m.m[0][3] + i.y * m.m[1][3] + i.z * m.m[2][3] + m.m[3][3];
+namespace Engine {
+    void AddToRenderQueue(SolarObject obj) {
+        renderQueue.push_back(obj);
+    }
 
-    if (w != 0) {
-        o.x /= w;
-        o.y /= w;
-        o.z /= w;
+    void Render(HDC deviceCtx) {
+        for (int i = 0; i < renderQueue.size(); ++i) {
+            DrawObject(renderQueue[i], deviceCtx);
+        }
     }
 }

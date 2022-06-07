@@ -9,8 +9,6 @@
 #define wnd_w 500
 
 namespace Engine {
-    RECT clientArea;
-
     const float zNear = .01f;
     const float zFar = 1000;
     const int FOV = 90;
