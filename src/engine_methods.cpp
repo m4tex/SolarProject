@@ -2,6 +2,8 @@
 // Created by MatexPL on 2022-06-07.
 //
 #include <cmath>
+#include <chrono>
+#include <string>
 #include "../headers/engine_methods.h"
 #include "../headers/engine_globals.h"
 #include "../headers/SolarObject.h"
@@ -21,6 +23,8 @@ Matrix4x4 projectionMatrix = {
 
 std::vector<SolarObject> renderQueue;
 std::vector<Triangle> triangleQueue;
+
+int FPS;
 
 void MultiplyMatrixVector(Vector3 &i, Vector3 &o, Matrix4x4 &m) {
     o.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + m.m[3][0];
@@ -66,12 +70,13 @@ void ProjectTriangleToQueue(Triangle triangle, Vector3 pos, Vector3 scale, Vecto
     if (normal.x * (triangle.vertices[0].x - camPos.x) +
         normal.y * (triangle.vertices[0].y - camPos.y) +
         normal.z * (triangle.vertices[0].z - camPos.z) > 0) {
+
         return;
     }
 
     //Illumination
     Vector3 lightColor = {255, 255, 255};
-    Vector3 lightDirection = {0, 0, 1};
+    Vector3 lightDirection = {0, 0, -1};
     float l = sqrtf(lightDirection.x * lightDirection.x + lightDirection.y * lightDirection.y +
                     lightDirection.z * lightDirection.z);
     lightDirection /= l;
@@ -96,6 +101,7 @@ void ProjectTriangleToQueue(Triangle triangle, Vector3 pos, Vector3 scale, Vecto
 }
 
 void DrawObject(SolarObject obj, HDC deviceCtx) {
+
     for (auto triangle: obj.mesh.tris) {
         ProjectTriangleToQueue(triangle, obj.position, obj.scale, cameraPosition, triangleQueue);
     }
@@ -142,6 +148,9 @@ void DrawObject(SolarObject obj, HDC deviceCtx) {
     triangleQueue.clear();
 }
 
+//const RECT fpsRect = { 20, 20, 300, 150 };
+auto t_last = std::chrono::high_resolution_clock::now();
+
 namespace Engine {
     void AddToRenderQueue(SolarObject obj) {
         renderQueue.push_back(obj);
@@ -151,5 +160,10 @@ namespace Engine {
         for (int i = 0; i < renderQueue.size(); ++i) {
             DrawObject(renderQueue[i], deviceCtx);
         }
+        auto t_now = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = t_now - t_last;
+        FPS = (int)(1/elapsed.count());
+        t_last = t_now;
+//        DrawTextA(deviceCtx, strFps.c_str(), strFps.length(), (LPRECT)&fpsRect, DT_LEFT);
     }
 }

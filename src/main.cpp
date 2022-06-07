@@ -12,14 +12,16 @@ Engine::SolarObject sword("Sword");
 void StartWindow(HINSTANCE hinstance);
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-    sword.mesh.LoadFromFile("../resources/models/sword.obj");
-    sword.position = { .5, .5, 1 };
-    StartWindow(hInstance);
+    sword.mesh.LoadFromFile("../resources/models/cube.obj");
+    sword.position = { 0, 0, 5 };
     Engine::AddToRenderQueue(sword);
+    StartWindow(hInstance);
     return 0;
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+HBRUSH bgBrush = CreateSolidBrush(RGB(0, 0, 0));
 
 void StartWindow(HINSTANCE hinstance) {
     // Register the window class.
@@ -30,6 +32,7 @@ void StartWindow(HINSTANCE hinstance) {
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hinstance;
     wc.lpszClassName = CLASS_NAME;
+    wc.hbrBackground = bgBrush;
 
     RegisterClass(&wc);
 
@@ -42,7 +45,7 @@ void StartWindow(HINSTANCE hinstance) {
             WS_EX_CLIENTEDGE,
             CLASS_NAME,
             "SolarEngine",
-            WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX,
+            WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME &  ~WS_MAXIMIZEBOX,
 
             // Size and position
             (screenWidth / 2) - 263, (screenHeight / 2) - 263, wnd_w, wnd_h + 31,
@@ -62,18 +65,26 @@ void StartWindow(HINSTANCE hinstance) {
 
     GetClientRect(hwnd, &clientArea);
 
-    MSG msg = {};
-    while (GetMessage(&msg, nullptr, 0, 0) > 0) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+    MSG msg;
+
+    while(true){
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+        if (msg.message == WM_QUIT)
+            break;
+
+        PAINTSTRUCT ps;
+        HDC deviceCtx = BeginPaint(hwnd, &ps);
+        Engine::Render(deviceCtx);
+        EndPaint(hwnd, &ps);
+        SetWindowText(hwnd, std::to_string(Engine::FPS).c_str());
     }
 
     return;
 }
-
-void DrawFrame(HDC deviceCtx);
-
-void PhysicsTick(HWND windowHandler);
 
 LRESULT CALLBACK WindowProc(HWND windowHandler, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -82,30 +93,7 @@ LRESULT CALLBACK WindowProc(HWND windowHandler, UINT uMsg, WPARAM wParam, LPARAM
             return 0;
 
         case WM_PAINT:
-            PAINTSTRUCT ps;
-            HDC deviceCtx = BeginPaint(windowHandler, &ps);
-            DrawFrame(deviceCtx);
-            EndPaint(windowHandler, &ps);
-            PhysicsTick(windowHandler);
             return 0;
     }
     return DefWindowProc(windowHandler, uMsg, wParam, lParam);
-}
-
-HBRUSH blackBrush = CreateSolidBrush(RGB(0, 0, 0));
-
-int frame = 0; //int is big enough for ~50 days at 1000fps
-
-void DrawFrame(HDC deviceCtx) {
-    FillRect(deviceCtx, &clientArea, blackBrush);
-    Engine::Render(deviceCtx);
-    frame++;
-}
-
-//auto t_start = std::chrono::high_resolution_clock::now();
-//// the work...
-//auto t_end = std::chrono::high_resolution_clock::now();
-
-void PhysicsTick(HWND windowHandler) {
-    SetWindowTextA(windowHandler, std::to_string(GetMessageTime()).c_str());
 }
