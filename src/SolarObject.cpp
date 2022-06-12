@@ -30,13 +30,5 @@ namespace Engine {
               -ysin,           ycos*xsin,                ycos*xcos,        0,
                 0,                 0,                        0,            0
         };
-
-
-//        return {
-//            ycos*zcos, xsin*ysin*zcos-xcos*zsin, xcos*ysin*zcos+xsin*zsin, 0,
-//            ycos*zcos, xsin*ysin*zsin+xcos*zcos, xcos*ysin*zsin-xsin*zcos, 0,
-//            -ysin,             xsin*ycos,                xcos*ycos,        0,
-//            0,                     0,                      0,              0
-//        };
     }
 } // Engine

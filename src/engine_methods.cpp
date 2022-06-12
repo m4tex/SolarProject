@@ -27,16 +27,13 @@ void MultiplyMatrixVector(Vector3 &i, Vector3 &o, Matrix4x4 &m) {
     o.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + m.m[3][0];
     o.y = i.x * m.m[0][1] + i.y * m.m[1][1] + i.z * m.m[2][1] + m.m[3][1];
     o.z = i.x * m.m[0][2] + i.y * m.m[1][2] + i.z * m.m[2][2] + m.m[3][2];
-    float w = i.x * m.m[0][3] + i.y * m.m[1][3] + i.z * m.m[2][3] + m.m[3][3];
+    float w = (i.x * m.m[0][3] + i.y * m.m[1][3] + i.z * m.m[2][3] + m.m[3][3]);
+    w += (w == 0);
 
-    if (w != 0) {
-        o.x /= w;
-        o.y /= w;
-        o.z /= w;
-    }
+    o.x /= w;
+    o.y /= w;
+    o.z /= w;
 }
-
-Vector3 test;
 
 Matrix4x4 rotationMatrix;
 
@@ -159,6 +156,13 @@ void DrawObject(SolarObject obj, HDC deviceCtx) {
     triangleQueue.clear();
 }
 
+//Settings
+bool rotating = false;
+bool moving = false;
+
+void UpdateSettings();
+void DrawSettings(HDC deviceCtx);
+
 namespace Engine {
     void AddToRenderQueue(SolarObject obj) {
         renderQueue.push_back(obj);
@@ -168,5 +172,36 @@ namespace Engine {
         for (int i = 0; i < renderQueue.size(); ++i) {
             DrawObject(renderQueue[i], deviceCtx);
         }
+        DrawSettings(deviceCtx);
     }
+
+    void Input(char c) {
+        if (c == 'r')
+            rotating = true;
+
+        UpdateSettings();
+    }
+}
+
+RECT rRect = { 20, 20, 120, 800 };
+RECT mRect = { 20, 80, 40, 120 };
+
+std::string stg1;
+std::string stg2;
+
+HPEN whitePen = CreatePen(0, 1, RGB(255, 255, 255));
+
+void DrawSettings(HDC deviceCtx) {
+    SelectObject(deviceCtx, whitePen);
+    SetTextColor(deviceCtx, RGB(255, 255, 255));
+    SetBkMode(deviceCtx, TRANSPARENT);
+    DrawTextA(deviceCtx, stg1.c_str(), -1, &rRect, DT_LEFT);
+    DrawTextA(deviceCtx, stg2.c_str(), -1, &mRect, DT_LEFT);
+}
+
+void UpdateSettings(){
+    stg1 = "R) Rotating: ";
+    stg1.append(rotating ? "On." : "Off.");
+    stg2 = "E) Moving: ";
+    stg2.append(rotating ? "On." : "Off.");
 }

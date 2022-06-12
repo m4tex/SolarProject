@@ -10,6 +10,7 @@
 namespace Engine {
     void AddToRenderQueue(SolarObject obj);
     void Render(HDC deviceCtx);
+    void Input(char c);
 //    void DrawMesh(Mesh mesh, HDC deviceCtx);
 //    void MultiplyMatrixVector(Vector3 &i, Vector3 &o, Matrix4x4 &m);
     //It exists.. but do we need it outside of the engine's context? Naaaah. Not now at least.

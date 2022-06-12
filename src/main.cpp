@@ -44,14 +44,14 @@ void StartWindow(HINSTANCE hinstance) {
     int screenWidth = GetSystemMetrics(SM_CXSCREEN);
     int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-    HWND hwnd = CreateWindowEx(
-            WS_EX_CLIENTEDGE,
+    HWND mainHwnd = CreateWindowEx(
+            NULL,
             CLASS_NAME,
             windowTitle.c_str(),
-    WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME &  ~WS_MAXIMIZEBOX,
+            WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME &  ~WS_MAXIMIZEBOX,
 
             // Size and position
-            (screenWidth / 2) - 263, (screenHeight / 2) - 263, wnd_w, wnd_h + 31,
+            (screenWidth / 2) - wnd_w/2, (screenHeight / 2) - wnd_h/2, wnd_w, wnd_h + 31,
 
             nullptr,       // Parent window
             nullptr,       // Menu
@@ -59,14 +59,14 @@ void StartWindow(HINSTANCE hinstance) {
             nullptr        // Additional application data
     );
 
-    if (hwnd == nullptr) {
+    if (mainHwnd == nullptr) {
         return;
     }
 
-    ShowWindow(hwnd, 1);
+    ShowWindow(mainHwnd, 1);
     // Run the message loop.
 
-    GetClientRect(hwnd, &clientArea);
+    GetClientRect(mainHwnd, &clientArea);
 
     auto t_old = std::chrono::high_resolution_clock::now();
     MSG msg;
@@ -81,14 +81,14 @@ void StartWindow(HINSTANCE hinstance) {
             break;
 
         PAINTSTRUCT ps;
-        HDC deviceCtx = BeginPaint(hwnd, &ps);
+        HDC deviceCtx = BeginPaint(mainHwnd, &ps);
         Engine::Render(deviceCtx);
-        EndPaint(hwnd, &ps);
+        EndPaint(mainHwnd, &ps);
 
         //FPS counter
         auto t_new = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = t_new - t_old;
-        SetWindowText(hwnd, (windowTitle + " (FPS: " + std::to_string((int)(1/elapsed.count())) + ")").c_str());
+        SetWindowText(mainHwnd, (windowTitle + " (FPS: " + std::to_string((int)(1 / elapsed.count())) + ")").c_str());
         t_old = t_new;
     }
 
@@ -97,12 +97,15 @@ void StartWindow(HINSTANCE hinstance) {
 
 LRESULT CALLBACK WindowProc(HWND windowHandler, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
-        case WM_DESTROY:
+//        case WM_KEYDOWN: {
+//
+//            return 0;
+//        }
+
+        case WM_DESTROY: {
             PostQuitMessage(0);
             return 0;
-
-        case WM_PAINT:
-            return 0;
+        }
     }
     return DefWindowProc(windowHandler, uMsg, wParam, lParam);
 }
