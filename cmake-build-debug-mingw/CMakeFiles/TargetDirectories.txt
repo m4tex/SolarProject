@@ -1,0 +1,3 @@
+Z:/Desktop/SolarProject/cmake-build-debug-mingw/CMakeFiles/SolarProject.dir
+Z:/Desktop/SolarProject/cmake-build-debug-mingw/CMakeFiles/edit_cache.dir
+Z:/Desktop/SolarProject/cmake-build-debug-mingw/CMakeFiles/rebuild_cache.dir

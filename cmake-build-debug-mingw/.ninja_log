@@ -1,0 +1,18 @@
+# ninja log v5
+4	3242	6767653294054146	CMakeFiles/SolarProject.dir/src/main.cpp.obj	f307e8865b85bd94
+27	3623	6762639964349323	CMakeFiles/SolarProject.dir/src/engine_structs.cpp.obj	c46b70b1102a75a9
+4002	4528	6767662484410860	SolarProject.exe	1f8c6dd334566648
+5	4002	6767662479121629	CMakeFiles/SolarProject.dir/src/engine_methods.cpp.obj	6f96316754b09bfa
+30	3998	6767645702739267	CMakeFiles/SolarProject.dir/src/SolarObject.cpp.obj	ef03ea8588390004
+5	2658	6767662906063277	CMakeFiles/SolarProject.dir/src/engine_methods.cpp.obj	6f96316754b09bfa
+2658	2990	6767662909349583	SolarProject.exe	1f8c6dd334566648
+5	3938	6767663052143337	CMakeFiles/SolarProject.dir/src/engine_methods.cpp.obj	6f96316754b09bfa
+3939	4235	6767663055071456	SolarProject.exe	1f8c6dd334566648
+5	3948	6767663295214053	CMakeFiles/SolarProject.dir/src/engine_methods.cpp.obj	6f96316754b09bfa
+3949	4304	6767663298734633	SolarProject.exe	1f8c6dd334566648
+5	2840	6767666361575907	CMakeFiles/SolarProject.dir/src/engine_methods.cpp.obj	6f96316754b09bfa
+2841	3154	6767666364678035	SolarProject.exe	1f8c6dd334566648
+5	4881	6769211836258122	CMakeFiles/SolarProject.dir/src/engine_methods.cpp.obj	6f96316754b09bfa
+4881	8914	6769211876513263	SolarProject.exe	1f8c6dd334566648
+10	4001	6769259184932042	CMakeFiles/SolarProject.dir/src/engine_methods.cpp.obj	6f96316754b09bfa
+4002	4911	6769259193994470	SolarProject.exe	1f8c6dd334566648

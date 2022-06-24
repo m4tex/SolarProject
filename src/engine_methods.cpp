@@ -157,7 +157,7 @@ void DrawObject(SolarObject obj, HDC deviceCtx) {
 }
 
 //Settings
-bool rotating = false;
+bool rotating = false;ö
 bool moving = false;
 
 void UpdateSettings();
@@ -172,36 +172,5 @@ namespace Engine {
         for (int i = 0; i < renderQueue.size(); ++i) {
             DrawObject(renderQueue[i], deviceCtx);
         }
-        DrawSettings(deviceCtx);
     }
-
-    void Input(char c) {
-        if (c == 'r')
-            rotating = true;
-
-        UpdateSettings();
-    }
-}
-
-RECT rRect = { 20, 20, 120, 800 };
-RECT mRect = { 20, 80, 40, 120 };
-
-std::string stg1;
-std::string stg2;
-
-HPEN whitePen = CreatePen(0, 1, RGB(255, 255, 255));
-
-void DrawSettings(HDC deviceCtx) {
-    SelectObject(deviceCtx, whitePen);
-    SetTextColor(deviceCtx, RGB(255, 255, 255));
-    SetBkMode(deviceCtx, TRANSPARENT);
-    DrawTextA(deviceCtx, stg1.c_str(), -1, &rRect, DT_LEFT);
-    DrawTextA(deviceCtx, stg2.c_str(), -1, &mRect, DT_LEFT);
-}
-
-void UpdateSettings(){
-    stg1 = "R) Rotating: ";
-    stg1.append(rotating ? "On." : "Off.");
-    stg2 = "E) Moving: ";
-    stg2.append(rotating ? "On." : "Off.");
 }
